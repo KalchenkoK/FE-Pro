@@ -41,7 +41,11 @@ const STDIN = (function () {
 })();
 
 const DATE = (function () {
+  
   return {
+    date(){
+      return  new Date();
+    } ,
     getMaxDay(year, month) {
       let maxDay =
         month === 4 || month === 6 || month === 9 || month === 11 ? 30 : 31;
@@ -108,7 +112,7 @@ const DATE = (function () {
 
 const archiveFabric = function () {
   const entries = [];
-  //const account = [];
+ 
   return {
     add(item) {
       entries.push(item);
@@ -150,13 +154,14 @@ const usersFabric = function (firstName, lastName, year, month, day) {
     },
 
     get age() {
+      
       let birthDate = new Date();
       birthDate.setFullYear(year);
       birthDate.setMonth(month - 1);
       birthDate.setDate(day);
-      let age = date.getFullYear() - birthDate.getFullYear();
-      let m = date.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && date.getDate() < birthDate.getDate())) {
+      let age = DATE.date().getFullYear() - birthDate.getFullYear();
+      let m = DATE.date().getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && DATE.date().getDate() < birthDate.getDate())) {
         age--;
       }
       return age;

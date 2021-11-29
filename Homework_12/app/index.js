@@ -1,5 +1,5 @@
 const minYear = 1900;
-let date = new Date();
+
 const minMonth = 1;
 const maxMonth = 12;
 const minName = 1;
@@ -9,7 +9,7 @@ const maxSecondName = 30;
 const minDay = 1;
 
 const zeroUser = "There are no users to delete";
-const validationMessageMaxYear = `Put max YEAR of birth to show: only numbers, min: ${minYear}, max: ${date.getFullYear()}`;
+const validationMessageMaxYear = `Put max YEAR of birth to show: only numbers, min: ${minYear}, max: ${DATE.date().getFullYear()}`;
 const operation_message_write = `Enter operation: 
 0 - Add user,
 1 - Delete user,
@@ -29,8 +29,8 @@ const operation_message_read = `Enter operation:
 
 const AUTHENTICATION = (() => {
   const accounts = archiveFabric();
-
-  accounts.add(new AdminAccount("admin@admin.com", "admin"));  
+  // console.log(accounts.entries)
+  accounts.add(new AdminAccount("admin@admin.com", "admin"));
 
   const validateEmail = function (input) {
     return input.indexOf("@") < 0;
@@ -56,20 +56,16 @@ const AUTHENTICATION = (() => {
         return new AdminAccount(email, password);
       } else if (finded) {
         return new GuestAccount(email, password);
+      }
+      let confirmed = confirm("Your are not registered. Do you want to retry?");
+      if (confirmed) {
+        return this.signIn();
+      }
+      let confirmedRegister = confirm("Do you want to register");
+      if (confirmedRegister) {
+        return this.signUp();
       } else {
-        let confirmed = confirm(
-          "Your are not registered. Do you want to retry?"
-        );
-        if (confirmed) {
-          return this.signIn();
-        } else {
-          let confirmedRegister = confirm("Do you want to register");
-          if (confirmedRegister) {
-            return this.signUp();
-          } else {
-            APPLICATION.end();
-          }
-        }
+        APPLICATION.end();
       }
     },
     signUp() {
@@ -87,7 +83,8 @@ const AUTHENTICATION = (() => {
         if (confirmed) {
           this.signUp();
         }
-        APPLICATION.end();
+
+        console.log("Bye bye");
       }
       return new GuestAccount(email, password);
     },
@@ -109,15 +106,15 @@ const APPLICATION = (() => {
       const permissions = this.account.permissions;
       const writePermission = permissions.includes("WRITE");
       if (writePermission) {
+        do {
+          const operationIndex = this.getOperation();
+          this.doOperation_write(operationIndex);
+        } while (confirm("Do you want to retry?"));
+        this.end();
+      }
+      do {
+        const operationIndex = this.getOperation();
 
-      do {
-        const operationIndex = this.getOperation();
-        this.doOperation_write(operationIndex);
-      } while (confirm("Do you want to retry?"));
-      this.end();}
-      do {
-        const operationIndex = this.getOperation();
-        debugger
         this.doOperation_read(operationIndex);
       } while (confirm("Do you want to retry?"));
       this.end();
@@ -207,10 +204,12 @@ const APPLICATION = (() => {
       );
 
       const validationOperationYear = function (input) {
-        return isNaN(input) || input < minYear || input > date.getFullYear();
+        return (
+          isNaN(input) || input < minYear || input > DATE.date().getFullYear()
+        );
       };
 
-      const validationMessageYear = `Put your YEAR of birthday: only numbers, min: ${minYear}, max: ${date.getFullYear()}`;
+      const validationMessageYear = `Put your YEAR of birthday: only numbers, min: ${minYear}, max: ${DATE.date().getFullYear()}`;
 
       const year = STDIN.getOperationInput(
         validationMessageYear,
@@ -282,7 +281,7 @@ const APPLICATION = (() => {
           `You find user: ${finded.fullName}, ${finded.age} years old`
         );
       } else {
-        console.log(`There is no user whith first name ${findUser}`);
+        console.log(`There is no user with first name ${findUser}`);
       }
     },
     filter() {
@@ -302,7 +301,7 @@ const APPLICATION = (() => {
           console.log(`Your filtered users: ${i.fullName} ${i.age} years old`);
         }
       } else {
-        console.log(`There are no users whith name ${filterUser}`);
+        console.log(`There are no users with name ${filterUser}`);
       }
     },
     each() {
@@ -344,7 +343,7 @@ const APPLICATION = (() => {
           console.log(`Your sliced users: ${i.fullName} ${i.age} years old`);
         }
       } else {
-        console.log(`There are no users whith this index`);
+        console.log(`There are no users with this index`);
       }
     },
     isEmpty() {
