@@ -57,6 +57,25 @@ const DATE = (function () {
       const formatedDate = dd + "/" + mm + "/" + yy + " " + hh + ":" + mn + ";";
       return formatedDate;
     },
+    getMonthByText() {
+      const date = new Date();
+      const month = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const mm = month[date.getMonth()];
+      return mm;
+    },
   };
 })();
 
@@ -66,18 +85,34 @@ const minYear = 1900;
 const minMonth = 1;
 const maxMonth = 12;
 const minDay = 1;
-const usersFabric = (function (firstName, lastName, year, month, day) {
-  return {
-    firstName,
-    lastName,
-    year,
-    month,
-    day,
-    get fullName() {
-      return `${firstName} ${lastName}`;
-    },
 
-    ageUser() {
+
+const validationMessageName = `Put your first name:  min: ${minName}, max: ${maxName}`;
+const coerceAgeToNumber = function (beforeAssign) {
+  return Number(beforeAssign);
+};
+const validationOperationName = function (input) {
+  input = input ?? "";
+  return input.trim().length < minName || input.trim().length > maxName;
+};
+const validationMessageLastName = `Put your last name:  min: ${minName}, max: ${maxName}`;
+
+const getUserInfo = {
+  firstName() {
+    return STDIN.getOperationInput(
+      validationMessageName,
+      validationOperationName
+    );
+  },
+  lastName() {
+    return STDIN.getOperationInput(
+      validationMessageLastName,
+      validationOperationName
+    );
+  },
+
+  age() {
+    
       const date = new Date();
       const validationMessageYear = `Put your YEAR of birthday: only numbers, min: ${minYear}, max: ${date.getFullYear()}`;
       const validationOperationYear = function (input) {
@@ -126,48 +161,101 @@ const usersFabric = (function (firstName, lastName, year, month, day) {
         return age;
       };
       return ageUser();
-    },
-  };
-})();
-
-const validationMessageName = `Put your first name:  min: ${minName}, max: ${maxName}`;
-const coerceAgeToNumber = function (beforeAssign) {
-  return Number(beforeAssign);
-};
-const validationOperationName = function (input) {
-  input = input ?? "";
-  return input.trim().length < minName || input.trim().length > maxName;
-};
-const validationMessageLastName = `Put your last name:  min: ${minName}, max: ${maxName}`;
-
-const someFunctions = {
-  firstName() {
-    return STDIN.getOperationInput(
-      validationMessageName,
-      validationOperationName
-    );
-  },
-  lastName() {
-    return STDIN.getOperationInput(
-      validationMessageLastName,
-      validationOperationName
-    );
-  },
-
-  age() {
-    return usersFabric.ageUser();
+    
   },
   date() {
     return DATE.formatDate();
   },
 };
 
-const data = document.querySelectorAll("span");
+class Timestamp {
+  constructor() {
+    this.date = new Date();
+  }
+  toISOString() {
+    let dd = this.date.getDate();
+    if (dd < 10) {
+      dd = "0" + dd;
+    }
+    const mm = this.date.getMonth() + 1;
+    if (mm < 10) {
+      mm = "0" + mm;
+    }
+    const yy = this.date.getFullYear();
 
-for (const el of data) {
-  const text = el.innerText;
+    let hh = this.date.getHours();
+    if (hh < 10) {
+      hh = "0" + hh;
+    }
 
-  if (text in someFunctions) {
-    el.innerText = someFunctions[text]();
+    let mn = this.date.getMinutes();
+    if (mn < 10) {
+      mn = "0" + mn;
+    }
+    let ss = this.date.getSeconds();
+    if (ss < 10) {
+      ss = "0" + ss;
+    }
+    let mmm = this.date.getMilliseconds();
+    if (mmm < 100) {
+      mmm = "0" + mmm;
+    }
+
+    const ISOString =
+      yy + "-" + mm + "-" + dd + " " + hh + ":" + mn + ":" + ss + "." + mmm;
+    return ISOString;
+  }
+  toString() {
+    let dd = this.date.getDate();
+
+    if (dd < 10) {
+      dd = "0" + dd;
+    }
+
+    const mm = DATE.getMonthByText();
+
+    const yy = this.date.getFullYear();
+
+    let hh = this.date.getHours();
+    if (hh < 10) {
+      hh = "0" + hh;
+    }
+
+    let mn = this.date.getMinutes();
+    if (mn < 10) {
+      mn = "0" + mn;
+    }
+    const toString = yy + " " + mm + " " + dd + " at " + hh + ":" + mn;
+    return toString;
   }
 }
+let time = new Timestamp();
+
+class App {
+  constructor() {
+    this.list = document.querySelector(".list");
+    this.timestamp = document.querySelector(".timestamp");
+  }
+
+  /* Перерисовывает каждый item */
+  render() {
+    for (const listItem of this.list.children) {
+      listItem.classList.add("list__item--ready");
+      for (const el of listItem.children) {
+        const dataF = el.dataset.field;
+        if (dataF in getUserInfo) {          
+          el.innerHTML = getUserInfo[dataF]();
+        }
+      }
+    }
+    app.update();
+  }
+  /* Обновляет timestamp на дату последнего обновления после каждого render*/
+  update() {
+    this.timestamp.innerHTML = time.toString();
+    this.timestamp.setAttribute("datetime", time.toISOString());
+  }
+}
+let app = new App();
+
+app.render();

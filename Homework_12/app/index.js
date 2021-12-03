@@ -1,15 +1,98 @@
+const minYear = 1900;
+const minMonth = 1;
+const maxMonth = 12;
+const minName = 1;
+const maxName = 20;
+const minSecondName = 1;
+const maxSecondName = 30;
+const minDay = 1;
+const zeroUser = "There are no users to delete";
+const validationMessageMaxYear = `Put max YEAR of birth to show: only numbers, min: ${minYear}, max: ${DATE.date().getFullYear()}`;
+const operation_message_write = `Enter operation: 
+0 - Add user,
+1 - Delete user,
+2 - Find user,
+3 - Filtered user,
+4 - Show adult users,
+5 - Show a slice of users,
+6 - Is archive empty?,
+7 - How many users are in the archive`;
+const operation_message_read = `Enter operation: 
+0 - Find user,
+1 - Filtered user,
+2 - Show adult users,
+3 - Show a slice of users,
+4 - Is archive empty?,
+5 - How many users are in the archive`;
+
+const AUTHENTICATION = (() => {
+  const accounts = archiveFabric();
+
+  login = new AdminAccount("admin@admin.com", "admin");
+  accounts.add(login);
+
+  const validateEmail = function (input) {
+    return input.indexOf("@") < 0;
+  };
+  const validatePassword = function (input) {
+    return input.length < 5;
+  };
+
+  return {
+    signIn() {
+      const email = STDIN.getOperationInput("Enter your email", validateEmail);
+      const password = STDIN.getOperationInput(
+        "Enter your password",
+        validatePassword
+      );
+
+      const findUserEmail = function (user) {
+        return user.email === email && user.password === password;
+      };
+      user = accounts.find(findUserEmail);
+
+      if (user) {
+        return user;
+      }
+
+      if (confirm("Your are not registered. Do you want to retry?")) {
+        return this.signIn();
+      }
+
+      if (confirm("Do you want to register")) {
+        return this.signUp();
+      }
+      return null;
+    },
+    signUp() {
+      const email = STDIN.getOperationInput("Enter your email", validateEmail);
+      const password = STDIN.getOperationInput(
+        "Enter your password",
+        validatePassword
+      );
+      const findUserEmail = function (login) {
+        return login.email === email;
+      };
+      const finded = accounts.find(findUserEmail);
+      if (finded) {
+        let confirmed = confirm("Wrong email. Do you want to retry?");
+        if (confirmed) {
+          this.signUp();
+        }
+        console.log("Bye bye");
+        return null;
+      }
+      user = new GuestAccount(email, password);
+      accounts.add(user);
+      return user;
+    },
+  };
+})();
+
 const APPLICATION = (() => {
-  const archive = archiveFabric(),
-    OPERATIONS = [
-      ["Add user", "addUser"],
-      ["Delete user", "delete"],
-      ["Find user", "find"],
-      ["Filtered user", "filter"],
-      ["Show adult users", "each"],
-      ["Show users slice", "take"],
-      ["Is archive empty?", "isEmpty"],
-      ["How many users in archive", "count"],
-    ];
+  const archive = archiveFabric();
+  account: null;
+
   const validationOperationName = function (input) {
     input = input ?? "";
     return input.trim().length < minName || input.trim().length > maxName;
@@ -17,32 +100,84 @@ const APPLICATION = (() => {
 
   return {
     run() {
+      this.account = AUTHENTICATION.signIn();
+      const permissions = this.account.permissions;     
+      const writePermission = permissions.includes("WRITE");
+      if (writePermission) {
+        do {
+          const operationIndex = this.getOperation();
+          this.doOperation_write(operationIndex);
+        } while (confirm("Do you want to retry?"));        
+        this.end();
+      }
+
       do {
-        console.clear();
-        const operationIndex = this.getOperation();
-        this.doOperation(operationIndex);
-      } while (confirm("Do you want to retry?"));
+         const operationIndex = this.getOperation();
+
+        this.doOperation_read(operationIndex);
+      } 
+     
+      while (confirm("Do you want to retry?"));      
       this.end();
     },
 
-    doOperation(index) {
-      const [, methodName] = OPERATIONS[index];
+    doOperation_write(index) {
+      const [, methodName] = OPERATIONS_WRITE[index];
+      if (typeof this[methodName] === "function") {
+        this[methodName]();
+      }
+    },
+    doOperation_read(index) {
+      const [, methodName] = OPERATIONS_READ[index];
       if (typeof this[methodName] === "function") {
         this[methodName]();
       }
     },
 
     getOperation() {
-      const availables = Object.keys(OPERATIONS);
-      const validationOperation = (input) => {
-        return !availables.includes(input);
-      };
+      const permissions = this.account.permissions;
 
+      OPERATIONS_WRITE = [
+        ["Add user", "addUser"],
+        ["Delete user", "delete"],
+        ["Find user", "find"],
+        ["Filtered user", "filter"],
+        ["Show adult users", "each"],
+        ["Show users slice", "take"],
+        ["Is archive empty?", "isEmpty"],
+        ["How many users in archive", "count"],
+      ];
+      OPERATIONS_READ = [
+        ["Find user", "find"],
+        ["Filtered user", "filter"],
+        ["Show adult users", "each"],
+        ["Show users slice", "take"],
+        ["Is archive empty?", "isEmpty"],
+        ["How many users in archive", "count"],
+      ];
       coerceAgeToNumber = (beforeAssign) => {
         return Number(beforeAssign);
       };
 
-      return STDIN.getOperationInput(operation_message, validationOperation);
+      const writePermission = permissions.includes("WRITE");
+      if (writePermission) {
+        const availables = Object.keys(OPERATIONS_WRITE);
+        const validationOperation = (input) => {
+          return !availables.includes(input);
+        };
+        return STDIN.getOperationInput(
+          operation_message_write,
+          validationOperation
+        );
+      }
+      const availables = Object.keys(OPERATIONS_READ);
+      const validationOperation = (input) => {
+        return !availables.includes(input);
+      };
+      return STDIN.getOperationInput(
+        operation_message_read,
+        validationOperation
+      );
     },
 
     end() {
@@ -70,10 +205,12 @@ const APPLICATION = (() => {
       );
 
       const validationOperationYear = function (input) {
-        return isNaN(input) || input < minYear || input > date.getFullYear();
+        return (
+          isNaN(input) || input < minYear || input > DATE.date().getFullYear()
+        );
       };
 
-      const validationMessageYear = `Put your YEAR of birthday: only numbers, min: ${minYear}, max: ${date.getFullYear()}`;
+      const validationMessageYear = `Put your YEAR of birthday: only numbers, min: ${minYear}, max: ${DATE.date().getFullYear()}`;
 
       const year = STDIN.getOperationInput(
         validationMessageYear,
@@ -145,7 +282,7 @@ const APPLICATION = (() => {
           `You find user: ${finded.fullName}, ${finded.age} years old`
         );
       } else {
-        console.log(`There is no user whith first name ${findUser}`);
+        console.log(`There is no user with first name ${findUser}`);
       }
     },
     filter() {
@@ -165,7 +302,7 @@ const APPLICATION = (() => {
           console.log(`Your filtered users: ${i.fullName} ${i.age} years old`);
         }
       } else {
-        console.log(`There are no users whith name ${filterUser}`);
+        console.log(`There are no users with name ${filterUser}`);
       }
     },
     each() {
@@ -207,7 +344,7 @@ const APPLICATION = (() => {
           console.log(`Your sliced users: ${i.fullName} ${i.age} years old`);
         }
       } else {
-        console.log(`There are no users whith this index`);
+        console.log(`There are no users with this index`);
       }
     },
     isEmpty() {
