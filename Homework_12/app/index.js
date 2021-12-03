@@ -1,5 +1,4 @@
 const minYear = 1900;
-
 const minMonth = 1;
 const maxMonth = 12;
 const minName = 1;
@@ -7,7 +6,6 @@ const maxName = 20;
 const minSecondName = 1;
 const maxSecondName = 30;
 const minDay = 1;
-
 const zeroUser = "There are no users to delete";
 const validationMessageMaxYear = `Put max YEAR of birth to show: only numbers, min: ${minYear}, max: ${DATE.date().getFullYear()}`;
 const operation_message_write = `Enter operation: 
@@ -29,8 +27,9 @@ const operation_message_read = `Enter operation:
 
 const AUTHENTICATION = (() => {
   const accounts = archiveFabric();
-  // console.log(accounts.entries)
-  accounts.add(new AdminAccount("admin@admin.com", "admin"));
+
+  login = new AdminAccount("admin@admin.com", "admin");
+  accounts.add(login);
 
   const validateEmail = function (input) {
     return input.indexOf("@") < 0;
@@ -47,26 +46,23 @@ const AUTHENTICATION = (() => {
         validatePassword
       );
 
-      const findUserEmail = function (login) {
-        return login.email === email;
+      const findUserEmail = function (user) {
+        return user.email === email && user.password === password;
       };
-      const finded = accounts.find(findUserEmail);
+      user = accounts.find(findUserEmail);
 
-      if (email === "admin@admin.com" && password === "admin") {
-        return new AdminAccount(email, password);
-      } else if (finded) {
-        return new GuestAccount(email, password);
+      if (user) {
+        return user;
       }
-      let confirmed = confirm("Your are not registered. Do you want to retry?");
-      if (confirmed) {
+
+      if (confirm("Your are not registered. Do you want to retry?")) {
         return this.signIn();
       }
-      let confirmedRegister = confirm("Do you want to register");
-      if (confirmedRegister) {
+
+      if (confirm("Do you want to register")) {
         return this.signUp();
-      } else {
-        APPLICATION.end();
       }
+      return null;
     },
     signUp() {
       const email = STDIN.getOperationInput("Enter your email", validateEmail);
@@ -83,10 +79,12 @@ const AUTHENTICATION = (() => {
         if (confirmed) {
           this.signUp();
         }
-
         console.log("Bye bye");
+        return null;
       }
-      return new GuestAccount(email, password);
+      user = new GuestAccount(email, password);
+      accounts.add(user);
+      return user;
     },
   };
 })();
@@ -103,20 +101,23 @@ const APPLICATION = (() => {
   return {
     run() {
       this.account = AUTHENTICATION.signIn();
-      const permissions = this.account.permissions;
+      const permissions = this.account.permissions;     
       const writePermission = permissions.includes("WRITE");
       if (writePermission) {
         do {
           const operationIndex = this.getOperation();
           this.doOperation_write(operationIndex);
-        } while (confirm("Do you want to retry?"));
+        } while (confirm("Do you want to retry?"));        
         this.end();
       }
+
       do {
-        const operationIndex = this.getOperation();
+         const operationIndex = this.getOperation();
 
         this.doOperation_read(operationIndex);
-      } while (confirm("Do you want to retry?"));
+      } 
+     
+      while (confirm("Do you want to retry?"));      
       this.end();
     },
 
