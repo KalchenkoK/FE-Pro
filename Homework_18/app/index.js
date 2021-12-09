@@ -2,7 +2,7 @@ const form = document.forms.form;
 const emailValue = form.email;
 const passwordValue = form.password;
 const submitButton = form.submitButton;
-const state = {};
+ const state = {};
 
 const validation = {
   email: (value) => !value.includes("@"),
@@ -12,7 +12,7 @@ const validation = {
   consent: (checked) => !checked,
 };
 
-const errors = {
+const isErrors = {
   email: true,
   password: true,
   passwordConfirm: true,
@@ -31,16 +31,16 @@ const handleEvent = (event) => {
       break;
   }
 
-  errors[name] =
+  isErrors[name] =
     name in validation ? validation[name](state[name], state) : false;
-  event.currentTarget.submitButton.disabled = Object.keys(errors).some(
-    (key) => errors[key]
+  event.currentTarget.submitButton.disabled = Object.keys(isErrors).some(
+    (key) => isErrors[key]
   );
 };
 
-const handleFocusOut = (event) => {
-  event.currentTarget.submitButton.disabled = !state.consent;
-};
+// const handleFocusOut = (event) => {
+//   event.currentTarget.submitButton.disabled = !state.consent;
+// };
 const handleSubmit = (event) => {
   event.preventDefault();
   const outTag = document.createElement("output");
