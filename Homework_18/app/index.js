@@ -38,9 +38,7 @@ const handleEvent = (event) => {
   );
 };
 
-// const handleFocusOut = (event) => {
-//   event.currentTarget.submitButton.disabled = !state.consent;
-// };
+
 const handleSubmit = (event) => {
   event.preventDefault();
   const outTag = document.createElement("output");
@@ -50,6 +48,3 @@ const handleSubmit = (event) => {
 };
 form.addEventListener("focusout", handleEvent);
 form.addEventListener("submit", handleSubmit);
-// submitButton.addEventListener('click', () => {
-// 	form.requestSubmit();
-// });
