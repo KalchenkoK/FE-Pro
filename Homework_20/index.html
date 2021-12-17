@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework_20</title>
+    <script defer src="./app/index.js"></script>
+    <link rel="stylesheet" href="./styles/index.css">
+</head>
+
+<body>
+    <div class="clock">
+        <ul>
+            <li class="hour"></li>
+            <li class="sep">:</li>
+            <li class="minute"></li>
+            <li class="sep">:</li>
+            <li class="second"></li>
+        </ul>
+        <button class="button">ALARM</button>
+    </div>
+    <div class="alarm" hidden>
+        <input type="number" max="23" min="00" id="inpHour" required>
+        <input type="number" id="inpMin" max="59" min="00" required>  
+        <div>
+            <span>Repeat everyday?</span>
+            <input type="checkbox" id="check"> 
+        </div>
+        
+          
+        <button class="alarmSet"> Set alarm</button>   
+    </div>
+    <div class="timer" hidden>
+            
+    </div>
+</body>
+
+</html>
