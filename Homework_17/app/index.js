@@ -40,177 +40,46 @@ const elFabric = (el, { attrs = {}, className, children = [] } = {}) => {
   return element;
 };
 
+
 const Main = () => {
+  const elements = [];
+  for (let index = 0; index < 25; index++) {
+  
+  const el = elFabric("div", {
+    className: "field__item",
+    attrs: {
+      "data-type": `${getRandomIntInclusive(0, 1)}`,
+    },
+  }) 
+  elements.push(el) 
+}
   return elFabric("div", {
     className: "field",
-    children: [
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `1`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-      elFabric("div", {
-        className: "field__item",
-        attrs: {
-          "data-type": `${getRandomIntInclusive(0, 1)}`,
-        },
-      }),
-    ],
+    children: 
+    elements 
+    
   });
 };
 root.append(Main());
 const a = document.querySelectorAll(".field__item");
 const div = document.getElementById("text");
-const bombsCount = div.firstElementChild;
-const openCount = div.lastElementChild;
-let bombCounter = 0;
-let openCounter = 0;
-openCount.innerHTML = `Disarmed: ${openCounter}`;
-bombsCount.innerHTML = `Bombs: ${bombCounter}`;
-for (const e of a) {
-  if (e.dataset.type === "1") {
-    bombsCount.innerHTML = `Bombs: ${++bombCounter}`;
+
+
+function bombsDisarm() {
+   const bombsCount = div.firstElementChild;
+  const openCount = div.lastElementChild;
+  let bombCounter = 0;
+  let openCounter = 0;
+  openCount.innerHTML = `Disarmed: ${openCounter}`;
+  bombsCount.innerHTML = `Bombs: ${bombCounter}`;
+  for (const e of a) {
+    if (e.dataset.type === "1") {
+      bombsCount.innerHTML = `Bombs: ${++bombCounter}`;
+    }
   }
+  return
 }
+bombsDisarm()
 const messageFail = document.querySelector(".message");
 const button = document.querySelector(".restart");
 const field = root.querySelector(".field");
@@ -239,20 +108,12 @@ const handleClick = (event) => {
 };
 const handleRestart = (event) => {
   if (event.target === button) {
-    root.innerHTML = "";
-    root.append(Main());
+    root.replaceChildren(Main());
     messageFail.hidden = true;
     button.hidden = true;
     root.hidden = false;
     messageWin.hidden = true;
-    openCounter = 0;
-    bombCounter = 0;
-    openCount.innerHTML = `Disarmed: ${openCounter}`;
-    for (const e of a) {
-      if (e.dataset.type === "1") {
-        bombsCount.innerHTML = `Bombs: ${++bombCounter}`;
-      }
-    }
+    bombsDisarm()
   }
 };
 
