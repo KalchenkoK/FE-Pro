@@ -80,8 +80,8 @@ const getCheckoutsForUserAsPromise = (userId) => {
       }
       return user;
     })
-    .then((user) => {
-      return getOrders()
+    .then((user) =>
+      getOrders()
         .then((orders) => {
           const userOrder = orders.filter((order) => order.userId === user.id);
           if (userOrder.length === 0) {
@@ -89,7 +89,6 @@ const getCheckoutsForUserAsPromise = (userId) => {
           }
           return userOrder;
         })
-
         .then((userOrder) => {
           return getProducts().then((prods) => {
             for (const el of userOrder) {
@@ -98,14 +97,14 @@ const getCheckoutsForUserAsPromise = (userId) => {
               checkout.splice(0, 2);
               for (const elem of newArray) {
                 const zakaz = prods.filter((prod) => prod.id === elem);
-                
+
                 checkout.push(zakaz[0]);
-              }              
+              }
             }
             return userOrder;
           });
-        });    
-    })
+        })
+    )
     .then(console.log)
     .catch(console.error);
 };

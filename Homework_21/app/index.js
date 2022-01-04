@@ -100,11 +100,7 @@ const getCheckoutsForUser = (userId, callback) => {
 };
 
 getCheckoutsForUser(1, (err, value) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log(value);
-  }
+  err? console.error(err):console.log(value);  
 });
 
 
