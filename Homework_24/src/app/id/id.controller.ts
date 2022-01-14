@@ -1,10 +1,10 @@
 import { BadRequestError } from "../../utils/error.util";
 import { Logger } from "../../utils/logger.util";
-import { TodoService } from "./todo.service";
+import { InputService } from "./id.service";
 
-export const TodoController = class TodoController {
+export const IdController = class IdController {
   constructor(
-    private readonly service = new TodoService(),
+    private readonly service = new InputService(),
     private readonly logger = new Logger()
   ) {}
 
@@ -14,14 +14,14 @@ export const TodoController = class TodoController {
       switch (option) {
         case "show":
           if (value) {
-            const todo = await this.service.handleGet(value);
+            const id = await this.service.handleGet(value);
 
-            this.logger.notify("Todo is found:", todo);
+            this.logger.notify("Oper is found:", id);
             break;
           }
 
-          const todos = await this.service.handleList();
-          this.logger.notify("All todos:", todos);
+          const IDs = await this.service.handleList();
+          this.logger.notify("All Oper:", IDs);
 
           break;
 
@@ -35,8 +35,8 @@ export const TodoController = class TodoController {
       
         case "f":
           const [operation, argum] = value.split("(");
-          await this.service.handleSum(argum, operation);
-              this.logger.notify("Success");          
+          await this.service.handleRes(argum, operation);
+              this.logger.notify("Added successfully");          
           break;
       }      
     } catch (error) {
